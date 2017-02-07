@@ -1,0 +1,3 @@
+{%- import_yaml "firehol/defaults.yaml" as defaults -%}
+
+{%- set firehol = salt['pillar.get']('firehol:lookup', defaults.firehol, merge=True) -%}

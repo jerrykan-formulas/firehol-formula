@@ -1,0 +1,6 @@
+firehol:
+  package: firehol
+  service: firehol
+
+  config_file: /etc/firehol/firehol.conf
+  default_file: /etc/default/firehol

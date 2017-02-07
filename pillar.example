@@ -1,0 +1,43 @@
+firehol:
+  # variables used by the rest of the firehol configuration
+  variables:
+    server_myhttp_ports="tcp/80,443"
+    client_myhttp_ports="default"
+
+  interfaces:
+    # define an interface with the name 'lan'
+    lan:
+      # network interface this interface applies to
+      iface: eth0
+      # server rules
+      server:
+        # service name
+        smtp:
+          # service action
+          action: accept
+          # service parameters
+          params:
+            src: 10.22.0.0/16
+      # client rules
+      client:
+        all:
+          action: accpt
+          params:
+            dst: 10.22.0.0/16
+
+    # interfaces are sorted by name
+    00_first_interface:
+      # the interface name can be overridden if it is being used for sorting
+      name: trusted
+      iface: eth0
+      # default policy
+      policy: RETURN
+      # interface parameters
+      params:
+        src: 10.0.1.0/24
+      server:
+        # rules are also sorted by the service name
+        00_http:
+          # the service name can be overridden if it is being used for sorting
+          service: http
+          action: accept

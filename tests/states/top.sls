@@ -1,0 +1,4 @@
+base:
+  '*':
+    - firehol
+    - firehol.config

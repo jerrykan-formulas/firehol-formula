@@ -1,0 +1,6 @@
+{%- set config = salt['pillar.get']('firehol:default', {}) -%}
+
+#To enable firehol at startup set START_FIREHOL=YES
+START_FIREHOL={{ 'YES' if config.get('start_firehol', True) else 'NO' }}
+#If you want to have firehol wait for an iface to be up add it here
+WAIT_FOR_IFACE="{{ config.get('wait_for_iface', '') }}"
