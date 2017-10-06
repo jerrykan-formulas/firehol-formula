@@ -1,3 +1,16 @@
 {%- import_yaml "firehol/defaults.yaml" as defaults -%}
 
+{%- set distro_release = salt['grains.get']('osmajorrelease')|string -%}
+{%- set release_dir = {
+    'Debian': {
+        '8': 'debian8',
+        '9': 'debian9',
+    }.get(distro_release, 'debian9'),
+}.get(salt['grains.get']('os_family')) -%}
+
+{%- do defaults.firehol.update({
+    'firehol_conf_src': 'salt://firehol/files/{}/firehol.conf.jinja'.format(release_dir),
+    'defaults_firehol_src': 'salt://firehol/files/{}/default_firehol.jinja'.format(release_dir),
+}) -%}
+
 {%- set firehol = salt['pillar.get']('firehol:lookup', defaults.firehol, merge=True) -%}

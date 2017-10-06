@@ -1,0 +1,67 @@
+{%- set config = salt['pillar.get']('firehol', {}) -%}
+
+{%- macro params(cfg, params='params') -%}
+    {%- for param, value in cfg.get(params, {}).items() -%}
+        {{- ' ' ~ param }} {{ value -}}
+    {%- endfor -%}
+{%- endmacro -%}
+
+# FireHOL configuration file
+#
+# See firehol.conf(5) manual page and FireHOL Manual for details.
+#
+# This configuration file will allow all requests originating from the
+# local machine to be send through all network interfaces.
+#
+# No requests are allowed to come from the network. The host will be
+# completely stealthed! It will not respond to anything, and it will
+# not be pingable, although it will be able to originate anything
+# (even pings to other hosts).
+#
+
+version 5
+
+# Variables
+{%- for name, value in config.get('variables', {}).items() %}
+{{ name }}="{{ value }}"
+{%- endfor %}
+
+# Interfaces
+{%- for name, iface_cfg in config.get('interfaces', {})|dictsort %}
+interface {{ iface_cfg.iface }} {{ iface_cfg.get('name', name) }} {{- params(iface_cfg) }}
+    # Server Rules
+    {%- for service, server_cfg in iface_cfg.get('server', {})|dictsort %}
+    server {{ server_cfg.get('service', service) }} {{ server_cfg.action }} {{- params(server_cfg) }}
+    {%- endfor %}
+
+    # Client Rules
+    {%- for service, client_cfg in iface_cfg.get('client', {})|dictsort %}
+    client {{ client_cfg.get('service', service) }} {{ client_cfg.action }} {{- params(client_cfg) }}
+    {%- endfor %}
+
+    {%- if iface_cfg.get('policy') %}
+
+    # Policy
+    policy {{ iface_cfg.policy }}
+    {%- endif %}
+{%- endfor %}
+
+# Routers
+{%- for name, router_cfg in config.get('routers', {})|dictsort %}
+router {{ router_cfg.get('name', name) }} {{- params(router_cfg) }}
+    # Server Rules
+    {%- for service, server_cfg in router_cfg.get('server', {})|dictsort %}
+    server {{ server_cfg.get('service', service) }} {{ server_cfg.action }} {{- params(server_cfg) }}
+    {%- endfor %}
+
+    # Client Rules
+    {%- for service, client_cfg in router_cfg.get('client', {})|dictsort %}
+    client {{ client_cfg.get('service', service) }} {{ client_cfg.action }} {{- params(client_cfg) }}
+    {%- endfor %}
+
+    {%- if router_cfg.get('policy') %}
+
+    # Policy
+    policy {{ router_cfg.policy }}
+    {%- endif %}
+{%- endfor %}

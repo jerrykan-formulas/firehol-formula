@@ -6,7 +6,7 @@ include:
 firehol-config-file:
   file.managed:
     - name: {{ firehol.config_file }}
-    - source: salt://firehol/files/firehol.conf.jinja
+    - source: {{ firehol.firehol_conf_src }}
     - template: jinja
     - require:
       - pkg: firehol-package
@@ -16,7 +16,7 @@ firehol-config-file:
 firehol-default-file:
   file.managed:
     - name: {{ firehol.default_file }}
-    - source: salt://firehol/files/default_firehol.jinja
+    - source: {{ firehol.defaults_firehol_src }}
     - template: jinja
     - require:
       - pkg: firehol-package
